@@ -2,9 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
-import userRoutes from "./routes/routes.js";
+import userRoutes from "./routes/user.routes.js";
 import cors from "cors";
-import User from "./models/user.js";
 
 const app = express();
 const server = createServer(app);
@@ -44,9 +43,10 @@ const socketMap = new Map();
 const connectedUsers = {};
 
 io.on("connection", (socket) => {
-  socket.on("connected", () => {
-    console.log("connected to socket");
+  socket.on("online", (username) => {
+    console.log(username, "connected to socket");
   });
+
   // When a user logs in, store the socket id associated with userId
   socket.on("login", (userId) => {
     if (!userId) {

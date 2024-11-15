@@ -34,6 +34,8 @@ const Profile = ({ params }: { params: { username: string } }) => {
   const [friendId, setFriendId] = useState<string>("null");
 
   useEffect(() => {
+    //getonline:
+    socket.emit("online", username);
     // Fetch all users when the component mounts
     const fetchUserData = async () => {
       try {
