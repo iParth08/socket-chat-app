@@ -10,6 +10,7 @@ import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
 
 import socket from "@/utils/socket";
+import { set } from "react-hook-form";
 
 // Type for a User
 type Friend = {
@@ -33,9 +34,28 @@ const Profile = ({ params }: { params: { username: string } }) => {
   const [userId, setUserId] = useState<string>("null");
   const [friendId, setFriendId] = useState<string>("null");
 
+  const [onlineFriends, setOnlineFriends] = useState<Set<string>>(new Set());
+
   useEffect(() => {
-    //getonline:
-    socket.emit("online", username);
+    const onlineStatusFunc = () => {
+      //getonline:
+      socket.emit("online", username);
+
+      socket.on("user-online", (data) => {
+        console.log(data.username, "is online:", data.online);
+        setOnlineFriends((prevState) => new Set(prevState.add(data.username)));
+      });
+
+      socket.on("user-offline", (data) => {
+        console.log(data.username, "is offline:", data.online);
+        setOnlineFriends((prevState) => {
+          const newSet = new Set(prevState); // Create a copy of the current Set
+          newSet.delete(data.username); // Remove the username
+          return newSet; // Return the new Set
+        });
+      });
+    };
+
     // Fetch all users when the component mounts
     const fetchUserData = async () => {
       try {
@@ -59,6 +79,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
       }
     };
 
+    onlineStatusFunc();
     fetchUserData();
   }, [username]);
 
@@ -161,6 +182,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
           friends={friends}
           showChatArea={showChatArea}
           showDashboard={showDashboard}
+          onlineFriends={onlineFriends}
         />
 
         {/* Main Content Area */}

@@ -14,39 +14,17 @@ type Friend = {
 const Sidebar = ({
   username,
   friends,
+  onlineFriends,
   showChatArea,
   showDashboard,
 }: {
   username: string;
   friends: Friend[];
+  onlineFriends: Set<string>;
   showChatArea: (friend: Friend) => void;
   showDashboard: boolean;
 }) => {
   const [selectedFriend, setSelectedFriend] = useState<string | null>(null);
-  // const [onlineFriends, setOnlineFriends] = useState(new Set());
-
-  // useEffect(() => {
-  //   // Emit the 'set-username' event when the user connects
-  //   socket.emit("set-username", username); //actual username
-
-  //   // Listen for 'user-online' and 'user-offline' events
-  //   socket.on("user-online", (data) => {
-  //     setOnlineFriends((prevState) => new Set(prevState.add(data.username)));
-  //   });
-
-  //   socket.on("user-offline", (data) => {
-  //     setOnlineFriends((prevState) => {
-  //       const newState = new Set(prevState);
-  //       newState.delete(data.username);
-  //       return newState;
-  //     });
-  //   });
-
-  //   return () => {
-  //     // Cleanup: Disconnect from socket when component is unmounted
-  //     socket.disconnect();
-  //   };
-  // }, [socket, username]);
 
   return (
     <div className="w-1/4 bg-gray-100 p-4 border-r">
@@ -90,13 +68,13 @@ const Sidebar = ({
                 </span>
               </section>
 
-              {/* <div
+              <div
                 className={`ml-auto h-[10px] w-[10px] rounded-full ${
                   onlineFriends.has(friend.username)
                     ? "bg-green-500"
                     : "bg-gray-500"
                 }`}
-              ></div> */}
+              ></div>
             </li>
           ))}
       </ul>

@@ -4,6 +4,7 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 import userRoutes from "./routes/user.routes.js";
 import cors from "cors";
+import User from "./models/user.js";
 
 const app = express();
 const server = createServer(app);
@@ -40,11 +41,28 @@ const io = new Server(server, {
 
 // Map to store user IDs and their associated socket IDs
 const socketMap = new Map();
-const connectedUsers = {};
+const onlineUsers = new Map();
 
 io.on("connection", (socket) => {
-  socket.on("online", (username) => {
+  socket.on("online", async (username) => {
     console.log(username, "connected to socket");
+
+    //save to database online status
+    try {
+      const user = await User.findOne({ username });
+      if (user) {
+        user.online = true;
+        await user.save();
+
+        onlineUsers.set(user._id, username);
+        //Broadcast that a user is online
+        io.emit("user-online", { username, online: true });
+      } else {
+        console.log("User not found");
+      }
+    } catch (err) {
+      console.error(err);
+    }
   });
 
   // When a user logs in, store the socket id associated with userId
@@ -90,6 +108,12 @@ io.on("connection", (socket) => {
       if (socketId === socket.id) {
         socketMap.delete(userId); // Remove the disconnected user from the map
         console.log(`User ${userId} disconnected`);
+
+        //Broadcast that a user is offline
+        const username = onlineUsers.get(userId);
+        onlineUsers.delete(userId);
+
+        io.emit("user-offline", { username, online: false });
       }
     }
   });
