@@ -1,6 +1,6 @@
-// Mongoose schema for messages
 import mongoose from "mongoose";
 
+// Schema for each message
 const messageSchema = new mongoose.Schema(
   {
     sender: {
@@ -14,11 +14,30 @@ const messageSchema = new mongoose.Schema(
       required: true,
     },
     content: { type: String, required: true },
-    timestamp: { type: Date, default: Date.now },
+    receivedTime: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );
 
-const Message = mongoose.model("Message", messageSchema);
+// Schema for a thread between two users
+const threadSchema = new mongoose.Schema(
+  {
+    user1: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    user2: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    messages: [messageSchema], // Array of messages between these two users
+  },
+  { timestamps: true }
+);
 
-export default Message;
+// Model for the thread, storing all messages between the two users
+const Thread = mongoose.model("Thread", threadSchema);
+
+export default Thread;

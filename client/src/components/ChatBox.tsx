@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import socket from "../utils/socket";
+import axios from "axios";
 
 // Define the types for messages
 type Message = {
-  sender: string;
-  text: string;
+  sender: string; // The ID of the sender
+  receiver: string; // The ID of the receiver
+  content: string; // The content of the message
+  receivedTime: Date;
 };
 
 // Define the props for the Chat component
@@ -17,17 +20,84 @@ const ChatBox: React.FC<ChatProps> = ({ userId, friendId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [message, setMessage] = useState<string>("");
 
+  //save message
+  const saveMessage = async (
+    senderId: any,
+    receiverId: any,
+    content: string
+  ) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3333/api/chats/send-message`,
+        {
+          senderId,
+          receiverId,
+          content,
+        }
+      );
+      console.log("Message saved:", response.data);
+    } catch (error) {
+      console.error("Error saving message:", error);
+    }
+  };
+
   useEffect(() => {
-    // Login user to Socket.io
-    socket.emit("login", userId);
+    // socket.emit("login", userId);
+
+    //Create a thread
+    const createThreadAndFetchMessages = async () => {
+      // establishing connection
+      console.log("Creating thread between", userId, "and", friendId);
+      try {
+        // Create a thread or get an existing one
+        const newThread = await axios.post(
+          `http://localhost:3333/api/chats/create-thread`,
+          {
+            user1Id: userId,
+            user2Id: friendId,
+          }
+        );
+
+        if (newThread) {
+          console.log("Thread created:", newThread.data);
+        } else {
+          console.log("Thread not created");
+        }
+
+        // fetch Messages for initial screen
+        const response = await axios.get(
+          `http://localhost:3333/api/chats/fetch-messages`,
+          {
+            params: {
+              user1Id: userId,
+              user2Id: friendId,
+            },
+          }
+        );
+
+        if (response.data) {
+          console.log("Messages fetched:", response.data);
+          setMessages(response.data);
+        }
+      } catch (error) {
+        console.error("Error creating thread:", error);
+      }
+    };
 
     // Listen for incoming messages
     socket.on("new_message", (data: { senderId: string; message: string }) => {
       setMessages((prev) => [
         ...prev,
-        { sender: data.senderId, text: data.message },
+        {
+          sender: data.senderId,
+          receiver: userId,
+          content: data.message,
+          receivedTime: new Date(),
+        },
       ]);
     });
+
+    createThreadAndFetchMessages(); // Create the thread as soon as it mounts
 
     return () => {
       socket.off("new_message");
@@ -44,7 +114,16 @@ const ChatBox: React.FC<ChatProps> = ({ userId, friendId }) => {
       });
 
       // Add message to local state for immediate UI update
-      setMessages((prev) => [...prev, { sender: userId, text: message }]);
+      saveMessage(userId, friendId, message);
+      setMessages((prev) => [
+        ...prev,
+        {
+          sender: userId,
+          receiver: friendId,
+          content: message,
+          receivedTime: new Date(),
+        },
+      ]);
       setMessage(""); // Clear input field
     }
   };
@@ -68,13 +147,16 @@ const ChatBox: React.FC<ChatProps> = ({ userId, friendId }) => {
             } mb-2`}
           >
             <div
-              className={`max-w-[80%] p-3 rounded-lg ${
+              className={`max-w-[80%] p-3 rounded-lg text-left ${
                 msg.sender === userId
                   ? "bg-blue-500 text-white"
                   : "bg-gray-300 text-gray-900"
               }`}
             >
-              {msg.text}
+              {msg.content} <br />
+              {/* <span className="ml-2 text-xs">
+                {msg.receivedTime.toLocaleTimeString()}
+              </span> */}
             </div>
           </div>
         ))}

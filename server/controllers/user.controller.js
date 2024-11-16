@@ -2,8 +2,6 @@ import User from "../models/user.js"; // Import User model
 import { socketMap } from "../index.js";
 
 export const addFriend = async (req, res) => {
-  console.log("addFriend called"); // !flag1
-  console.log(" Addfriend->socketMap ::", socketMap); // !flag2
   const { username, friendUsername } = req.body;
   const io = req.io; // Access io from the request object
 
@@ -32,12 +30,12 @@ export const addFriend = async (req, res) => {
       friend.friends.push(user._id);
       await friend.save();
     }
-    console.log("Friends Updated"); // !flag2
+
     // Emit real-time event : [userId : username]
     const userSocket = socketMap.get(user._id.toString());
     const friendSocket = socketMap.get(friend._id.toString());
 
-    console.table([userSocket, friendSocket]); // !flag3
+    // console.table([userSocket, friendSocket]); // !flag3
 
     // Emit real-time event
     if (userSocket) {
@@ -58,12 +56,8 @@ export const addFriend = async (req, res) => {
 };
 
 export const removeFriend = async (req, res) => {
-  console.log("RemoveFriend called"); // !flag1
-  console.log("RemoveFriend->socketMap ::", socketMap); // !flag2
   const { username, friendUsername } = req.body;
   const io = req.io; // Access io from the request object
-
-  console.log("io", io._path); // !flag1.1
 
   try {
     const user = await User.findOne({ username });
@@ -92,12 +86,11 @@ export const removeFriend = async (req, res) => {
     await user.save();
     await friend.save();
 
-    console.log("Friend Removed"); // !flag2
     // Emit real-time event
     const userSocket = socketMap.get(user._id.toString());
     const friendSocket = socketMap.get(friend._id.toString());
 
-    console.table([userSocket, friendSocket]); // !flag3
+    // console.table([userSocket, friendSocket]); // !flag3
 
     if (userSocket) {
       io.to(userSocket).emit("friend_list_updated", { updated: true });

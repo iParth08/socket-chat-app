@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
 import userRoutes from "./routes/user.routes.js";
+import chatRoutes from "./routes/chat.routes.js";
 import cors from "cors";
 import User from "./models/user.js";
 import dotenv from "dotenv";
@@ -19,8 +20,6 @@ const io = new Server(server, {
   },
 });
 
-console.log("io from start: ", io._path);
-
 // Middleware
 app.use(express.json());
 app.use(cors("*"));
@@ -31,6 +30,7 @@ app.use((req, res, next) => {
 
 // Use the routes for user-related actions
 app.use("/api/users", userRoutes);
+app.use("/api/chats", chatRoutes);
 
 async function connectDB() {
   try {
@@ -92,18 +92,18 @@ io.on("connection", (socket) => {
   });
 
   //!Redundant Function remove it safely
-  socket.on("login", (userId) => {
-    userId = userId.toString(); //typecast for safety
+  // socket.on("login", (userId) => {
+  //   userId = userId.toString(); //typecast for safety
 
-    if (!userId) {
-      console.error("Error: userId is required for login.");
-      return;
-    }
-    if (!socketMap.has(userId)) {
-      socketMap.set(userId, socket.id);
-    }
-    console.log(`User ${userId} logged in with socket ID ${socket.id}`);
-  });
+  //   if (!userId) {
+  //     console.error("Error: userId is required for login.");
+  //     return;
+  //   }
+  //   if (!socketMap.has(userId)) {
+  //     socketMap.set(userId, socket.id);
+  //   }
+  //   console.log(`User ${userId} logged in with socket ID ${socket.id}`);
+  // });
 
   // Event to handle private messaging
   socket.on(
@@ -137,15 +137,13 @@ io.on("connection", (socket) => {
 
   // Handle disconnections and clean up the socket map
   socket.on("disconnect", async () => {
-    console.log("discconnected user" + socket.id);
+    console.log("discconnected user" + socket.id); //!flag : 01
     // Find the user associated with this socket ID
     for (const [userId, socketId] of socketMap.entries()) {
       if (socketId === socket.id) {
         // Update the database and remove from onlineUsers
-        console.log("disc if inside,,,trying");
         try {
           const user = await User.findById(userId);
-          console.log(user);
           if (user) {
             user.online = false;
             await user.save();

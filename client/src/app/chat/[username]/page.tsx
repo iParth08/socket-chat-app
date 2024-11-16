@@ -34,34 +34,6 @@ const Profile = ({ params }: { params: { username: string } }) => {
   const [onlineFriends, setOnlineFriends] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    // const onlineStatusFunc = () => {
-    //   //getonline:
-    //   socket.emit("online", username);
-
-    //   socket.on("user-online", (data) => {
-    //     console.log(`${data.username} is online`);
-    //     setOnlineFriends((prevState) => {
-    //       const newSet = new Set(prevState);
-    //       newSet.add(data.username);
-    //       return newSet;
-    //     });
-    //   });
-
-    //   socket.on("user-offline", (data) => {
-    //     console.log(`${data.username} is offline`);
-    //     setOnlineFriends((prevState) => {
-    //       const newSet = new Set(prevState);
-    //       newSet.delete(data.username);
-    //       return newSet;
-    //     });
-    //   });
-
-    //   socket.once("current-online-users", (onlineUsers) => {
-    //     console.log("Online users received:", onlineUsers);
-    //     setOnlineFriends(new Set(onlineUsers)); // Update the state with the list of online users
-    //   });
-    // };
-
     //handle online user
     const handleUserOnline = (data: any) => {
       console.log(`${data.username} is online`);
