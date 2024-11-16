@@ -55,6 +55,11 @@ const Profile = ({ params }: { params: { username: string } }) => {
           return newSet;
         });
       });
+
+      socket.on("current-online-users", (onlineUsers) => {
+        console.log("Online users received:", onlineUsers);
+        setOnlineFriends(new Set(onlineUsers)); // Update the state with the list of online users
+      });
     };
 
     // Fetch all users when the component mounts
@@ -80,8 +85,16 @@ const Profile = ({ params }: { params: { username: string } }) => {
       }
     };
 
-    // onlineStatusFunc();
+    onlineStatusFunc();
     fetchUserData();
+
+    return () => {
+      // Cleanup function
+      socket.off("user-online");
+      socket.off("user-offline");
+      socket.off("current-online-users");
+      console.log("Set :", onlineFriends);
+    };
   }, [username]);
 
   // handle filter by name or username

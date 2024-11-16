@@ -43,10 +43,11 @@ const io = new Server(server, {
 const socketMap = new Map();
 const onlineUsers = new Map();
 
+console.log("socketMap", socketMap);
+console.log("onlineUsers", onlineUsers);
+
 io.on("connection", (socket) => {
   socket.on("online", async (username) => {
-    console.log(username, "connected to socket");
-
     try {
       // Find the user in the database
       const user = await User.findOne({ username });
@@ -57,14 +58,20 @@ io.on("connection", (socket) => {
         await user.save();
 
         // Update onlineUsers and socketMap
-        onlineUsers.set(user._id, username);
+        if (!onlineUsers.has(user._id)) {
+          onlineUsers.set(user._id, username);
+          socketMap.set(user._id, socket.id);
+        }
         // socketMap.set(user._id, socket.id);
 
         // Broadcast only the username of the online user
         io.emit("user-online", { username, userId: user._id, online: true });
 
         // Emit the current online users
-        // socket.emit("current-online-users", Array.from(onlineUsers.values()));
+        socket.emit(
+          "current-online-users",
+          Array.from(new Set(onlineUsers.values()))
+        );
 
         console.log("User is now online:", username);
       } else {
@@ -80,7 +87,9 @@ io.on("connection", (socket) => {
       console.error("Error: userId is required for login.");
       return;
     }
-    socketMap.set(userId, socket.id);
+    if (!socketMap.has(userId)) {
+      socketMap.set(userId, socket.id);
+    }
     console.log(`User ${userId} logged in with socket ID ${socket.id}`);
   });
 
@@ -112,12 +121,15 @@ io.on("connection", (socket) => {
 
   // Handle disconnections and clean up the socket map
   socket.on("disconnect", async () => {
+    console.log("discconnected user" + socket.id);
     // Find the user associated with this socket ID
     for (const [userId, socketId] of socketMap.entries()) {
       if (socketId === socket.id) {
         // Update the database and remove from onlineUsers
+        console.log("disc if inside,,,trying");
         try {
           const user = await User.findById(userId);
+          console.log(user);
           if (user) {
             user.online = false;
             await user.save();
@@ -132,7 +144,6 @@ io.on("connection", (socket) => {
             userId,
             online: false,
           });
-
           console.log("User is now offline:", user?.username);
         } catch (err) {
           console.error("Error setting user offline:", err);
