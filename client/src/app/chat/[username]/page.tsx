@@ -10,7 +10,6 @@ import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
 
 import socket from "@/utils/socket";
-import { set } from "react-hook-form";
 
 // Type for a User
 type Friend = {
