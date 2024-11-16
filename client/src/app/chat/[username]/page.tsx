@@ -42,16 +42,20 @@ const Profile = ({ params }: { params: { username: string } }) => {
       socket.emit("online", username);
 
       socket.on("user-online", (data) => {
-        console.log(data.username, "is online:", data.online);
-        setOnlineFriends((prevState) => new Set(prevState.add(data.username)));
+        console.log(`${data.username} is online`);
+        setOnlineFriends((prevState) => {
+          const newSet = new Set(prevState);
+          newSet.add(data.username);
+          return newSet;
+        });
       });
 
       socket.on("user-offline", (data) => {
-        console.log(data.username, "is offline:", data.online);
+        console.log(`${data.username} is offline`);
         setOnlineFriends((prevState) => {
-          const newSet = new Set(prevState); // Create a copy of the current Set
-          newSet.delete(data.username); // Remove the username
-          return newSet; // Return the new Set
+          const newSet = new Set(prevState);
+          newSet.delete(data.username);
+          return newSet;
         });
       });
     };

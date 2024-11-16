@@ -47,32 +47,32 @@ io.on("connection", (socket) => {
   socket.on("online", async (username) => {
     console.log(username, "connected to socket");
 
-    //save to database online status
     try {
+      // Find the user in the database
       const user = await User.findOne({ username });
+
       if (user) {
+        // Update the user's online status in the database
         user.online = true;
         await user.save();
 
+        // Update onlineUsers and socketMap
         onlineUsers.set(user._id, username);
-        //Broadcast that a user is online
-        io.emit("user-online", { username, online: true });
+        socketMap.set(user._id, socket.id);
+
+        // Broadcast only the username of the online user
+        io.emit("user-online", { username, userId: user._id, online: true });
+
+        // Emit the current online users
+        // socket.emit("current-online-users", Array.from(onlineUsers.values()));
+
+        console.log("User is now online:", username);
       } else {
         console.log("User not found");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error setting user online:", err);
     }
-  });
-
-  // When a user logs in, store the socket id associated with userId
-  socket.on("login", (userId) => {
-    if (!userId) {
-      console.error("Error: userId is required for login.");
-      return;
-    }
-    socketMap.set(userId, socket.id);
-    console.log(`User ${userId} logged in with socket ID ${socket.id}`);
   });
 
   // Event to handle private messaging
@@ -102,18 +102,33 @@ io.on("connection", (socket) => {
   );
 
   // Handle disconnections and clean up the socket map
-  socket.on("disconnect", () => {
-    // Loop through the socketMap to find and delete the user that disconnected
-    for (let [userId, socketId] of socketMap.entries()) {
+  socket.on("disconnect", async () => {
+    // Find the user associated with this socket ID
+    for (const [userId, socketId] of socketMap.entries()) {
       if (socketId === socket.id) {
-        socketMap.delete(userId); // Remove the disconnected user from the map
-        console.log(`User ${userId} disconnected`);
+        // Update the database and remove from onlineUsers
+        try {
+          const user = await User.findById(userId);
+          if (user) {
+            user.online = false;
+            await user.save();
+          }
 
-        //Broadcast that a user is offline
-        const username = onlineUsers.get(userId);
-        onlineUsers.delete(userId);
+          onlineUsers.delete(userId);
+          socketMap.delete(userId);
 
-        io.emit("user-offline", { username, online: false });
+          // Notify other users that this user is offline
+          io.emit("user-offline", {
+            username: user?.username,
+            userId,
+            online: false,
+          });
+
+          console.log("User is now offline:", user?.username);
+        } catch (err) {
+          console.error("Error setting user offline:", err);
+        }
+        break;
       }
     }
   });
