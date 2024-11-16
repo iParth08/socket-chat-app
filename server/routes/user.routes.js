@@ -1,5 +1,6 @@
 import express from "express";
 import User from "../models/user.js"; // Import User model
+import { addFriend, removeFriend } from "../controllers/user.controller.js";
 
 const router = express.Router();
 
@@ -33,80 +34,86 @@ router.post("/check", async (req, res) => {
   }
 });
 
-// Add a friend to a user (by username)
-router.post("/add-friend", async (req, res) => {
-  const { username, friendUsername } = req.body;
+// // Add a friend to a user (by username)
+// router.post("/add-friend", async (req, res) => {
+//   const { username, friendUsername } = req.body;
 
-  try {
-    const user = await User.findOne({ username });
-    const friend = await User.findOne({ username: friendUsername });
+//   try {
+//     const user = await User.findOne({ username });
+//     const friend = await User.findOne({ username: friendUsername });
 
-    if (!user || !friend) {
-      return res.status(404).json({ error: "User or friend not found" });
-    }
+//     if (!user || !friend) {
+//       return res.status(404).json({ error: "User or friend not found" });
+//     }
 
-    // Avoid adding the user as their own friend
-    if (user._id.toString() === friend._id.toString()) {
-      return res
-        .status(400)
-        .json({ error: "You cannot add yourself as a friend" });
-    }
+//     // Avoid adding the user as their own friend
+//     if (user._id.toString() === friend._id.toString()) {
+//       return res
+//         .status(400)
+//         .json({ error: "You cannot add yourself as a friend" });
+//     }
 
-    // Add friend to the user's friends array and vice versa
-    if (!user.friends.includes(friend._id)) {
-      user.friends.push(friend._id);
-      await user.save();
-    }
+//     // Add friend to the user's friends array and vice versa
+//     if (!user.friends.includes(friend._id)) {
+//       user.friends.push(friend._id);
+//       await user.save();
+//     }
 
-    if (!friend.friends.includes(user._id)) {
-      friend.friends.push(user._id);
-      await friend.save();
-    }
+//     if (!friend.friends.includes(user._id)) {
+//       friend.friends.push(user._id);
+//       await friend.save();
+//     }
 
-    res.status(200).json({ message: "Friend added successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Error adding friend" });
-  }
-});
+//     res.status(200).json({ message: "Friend added successfully" });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Error adding friend" });
+//   }
+// });
 
-// Remove a friend from a user (by username)
-router.post("/remove-friend", async (req, res) => {
-  const { username, friendUsername } = req.body;
+// // Remove a friend from a user (by username)
+// router.post("/remove-friend", async (req, res) => {
+//   const { username, friendUsername } = req.body;
 
-  try {
-    const user = await User.findOne({ username });
-    const friend = await User.findOne({ username: friendUsername });
+//   try {
+//     const user = await User.findOne({ username });
+//     const friend = await User.findOne({ username: friendUsername });
 
-    if (!user || !friend) {
-      return res.status(404).json({ error: "User or friend not found" });
-    }
+//     if (!user || !friend) {
+//       return res.status(404).json({ error: "User or friend not found" });
+//     }
 
-    // Check if they are actually friends
-    if (
-      !user.friends.includes(friend._id) ||
-      !friend.friends.includes(user._id)
-    ) {
-      return res.status(400).json({ error: "They are not friends" });
-    }
+//     // Check if they are actually friends
+//     if (
+//       !user.friends.includes(friend._id) ||
+//       !friend.friends.includes(user._id)
+//     ) {
+//       return res.status(400).json({ error: "They are not friends" });
+//     }
 
-    // Remove friend from user's friends array and vice versa
-    user.friends = user.friends.filter(
-      (friendId) => friendId.toString() !== friend._id.toString()
-    );
-    friend.friends = friend.friends.filter(
-      (friendId) => friendId.toString() !== user._id.toString()
-    );
+//     // Remove friend from user's friends array and vice versa
+//     user.friends = user.friends.filter(
+//       (friendId) => friendId.toString() !== friend._id.toString()
+//     );
+//     friend.friends = friend.friends.filter(
+//       (friendId) => friendId.toString() !== user._id.toString()
+//     );
 
-    await user.save();
-    await friend.save();
+//     await user.save();
+//     await friend.save();
 
-    res.status(200).json({ message: "Friend removed successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Error removing friend" });
-  }
-});
+//     res.status(200).json({ message: "Friend removed successfully" });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Error removing friend" });
+//   }
+// });
+
+// Add friend route
+router.post("/add-friend", addFriend);
+
+// Remove friend route
+router.post("/remove-friend", removeFriend);
 
 // fetch friend list
 router.get("/:username/friends", async (req, res) => {

@@ -34,32 +34,58 @@ const Profile = ({ params }: { params: { username: string } }) => {
   const [onlineFriends, setOnlineFriends] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    const onlineStatusFunc = () => {
-      //getonline:
-      socket.emit("online", username);
+    // const onlineStatusFunc = () => {
+    //   //getonline:
+    //   socket.emit("online", username);
 
-      socket.on("user-online", (data) => {
-        console.log(`${data.username} is online`);
-        setOnlineFriends((prevState) => {
-          const newSet = new Set(prevState);
-          newSet.add(data.username);
-          return newSet;
-        });
-      });
+    //   socket.on("user-online", (data) => {
+    //     console.log(`${data.username} is online`);
+    //     setOnlineFriends((prevState) => {
+    //       const newSet = new Set(prevState);
+    //       newSet.add(data.username);
+    //       return newSet;
+    //     });
+    //   });
 
-      socket.on("user-offline", (data) => {
-        console.log(`${data.username} is offline`);
-        setOnlineFriends((prevState) => {
-          const newSet = new Set(prevState);
-          newSet.delete(data.username);
-          return newSet;
-        });
-      });
+    //   socket.on("user-offline", (data) => {
+    //     console.log(`${data.username} is offline`);
+    //     setOnlineFriends((prevState) => {
+    //       const newSet = new Set(prevState);
+    //       newSet.delete(data.username);
+    //       return newSet;
+    //     });
+    //   });
 
-      socket.on("current-online-users", (onlineUsers) => {
-        console.log("Online users received:", onlineUsers);
-        setOnlineFriends(new Set(onlineUsers)); // Update the state with the list of online users
+    //   socket.once("current-online-users", (onlineUsers) => {
+    //     console.log("Online users received:", onlineUsers);
+    //     setOnlineFriends(new Set(onlineUsers)); // Update the state with the list of online users
+    //   });
+    // };
+
+    //handle online user
+    const handleUserOnline = (data: any) => {
+      console.log(`${data.username} is online`);
+      setOnlineFriends((prevState) => {
+        const newSet = new Set(prevState);
+        newSet.add(data.username);
+        return newSet;
       });
+    };
+
+    //handle offline user
+    const handleUserOffline = (data: any) => {
+      console.log(`${data.username} is offline`);
+      setOnlineFriends((prevState) => {
+        const newSet = new Set(prevState);
+        newSet.delete(data.username);
+        return newSet;
+      });
+    };
+
+    //set online friendslist
+    const handleOnlineFriends = (onlineUsers: any) => {
+      console.log("Online users received:", onlineUsers);
+      setOnlineFriends(new Set(onlineUsers));
     };
 
     // Fetch all users when the component mounts
@@ -71,13 +97,9 @@ const Profile = ({ params }: { params: { username: string } }) => {
         const allUsersResponse = await axios.get(
           "http://localhost:3333/api/users"
         );
-        const friendsResponse = await axios.get(
-          `http://localhost:3333/api/users/${username}/friends`
-        );
 
         setCurrentUser(currentUserResponse.data);
         setAllUsers(allUsersResponse.data);
-        setFriends(friendsResponse.data);
         setFilteredUsers(allUsersResponse.data); // Initially, show all users
       } catch (err) {
         console.error("Error fetching users.");
@@ -85,14 +107,42 @@ const Profile = ({ params }: { params: { username: string } }) => {
       }
     };
 
-    onlineStatusFunc();
+    //Fetch added friends
+    const fetchFriends = async () => {
+      try {
+        const friendsResponse = await axios.get(
+          `http://localhost:3333/api/users/${username}/friends`
+        );
+
+        console.log("Friends:", friendsResponse.data);
+
+        setFriends(friendsResponse.data);
+      } catch (err) {
+        console.error("Error fetching friends.");
+        console.error(err);
+      }
+    };
+
+    // onlineStatusFunc();
     fetchUserData();
+    fetchFriends(); //initially fetch friends
+
+    //event listeners
+    socket.emit("online", username);
+    socket.on("user-online", handleUserOnline);
+    socket.on("user-offline", handleUserOffline);
+    socket.once("current-online-users", handleOnlineFriends);
+    socket.on("friend_list_updated", async () => {
+      console.log("Friend list updated for:", username);
+      await fetchFriends();
+    });
 
     return () => {
       // Cleanup function
       socket.off("user-online");
       socket.off("user-offline");
       socket.off("current-online-users");
+      socket.off("friend_list_updated");
       console.log("Set :", onlineFriends);
     };
   }, [username]);
@@ -118,12 +168,6 @@ const Profile = ({ params }: { params: { username: string } }) => {
         username,
         friendUsername,
       });
-
-      // Fetch updated friend list
-      const friendsResponse = await axios.get(
-        `http://localhost:3333/api/users/${username}/friends`
-      );
-      setFriends(friendsResponse.data);
     } catch (err) {
       console.error("Error adding friend.");
       console.error(err);
@@ -138,12 +182,6 @@ const Profile = ({ params }: { params: { username: string } }) => {
         username,
         friendUsername,
       });
-
-      // Fetch updated friend list
-      const friendsResponse = await axios.get(
-        `http://localhost:3333/api/users/${username}/friends`
-      );
-      setFriends(friendsResponse.data);
     } catch (err) {
       console.error("Error removing friend.");
       console.error(err);

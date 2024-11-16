@@ -5,32 +5,12 @@ import { Server } from "socket.io";
 import userRoutes from "./routes/user.routes.js";
 import cors from "cors";
 import User from "./models/user.js";
+import dotenv from "dotenv";
 
 const app = express();
 const server = createServer(app);
 
-// Middleware
-app.use(express.json());
-app.use(cors("*"));
-
-// Use the routes for user-related actions
-app.use("/api/users", userRoutes);
-
-// connect to database
-const mongoURI =
-  "mongodb+srv://mysapiensio:CV5oYI24UPdKdjQL@cluster0.ndxx7.mongodb.net";
-
-async function connectDB() {
-  try {
-    await mongoose.connect(mongoURI);
-    console.log("MongoDB connected");
-  } catch (err) {
-    console.error("MongoDB connection error:", err);
-    setTimeout(connectDB, 5000); // Retry after 5 seconds
-  }
-}
-connectDB();
-
+dotenv.config();
 // Configure Socket.IO with CORS options
 const io = new Server(server, {
   cors: {
@@ -38,6 +18,30 @@ const io = new Server(server, {
     methods: ["GET", "POST", "OPTIONS"],
   },
 });
+
+console.log("io from start: ", io._path);
+
+// Middleware
+app.use(express.json());
+app.use(cors("*"));
+app.use((req, res, next) => {
+  req.io = io; // Attach io to the request object
+  next();
+});
+
+// Use the routes for user-related actions
+app.use("/api/users", userRoutes);
+
+async function connectDB() {
+  try {
+    await mongoose.connect(process.env.MONGO_DB_URI);
+    console.log("MongoDB connected");
+  } catch (err) {
+    console.error("MongoDB connection error:", err);
+    setTimeout(connectDB, 5000); // Retry after 5 seconds
+  }
+}
+connectDB();
 
 // Map to store user IDs and their associated socket IDs
 const socketMap = new Map();
@@ -57,15 +61,20 @@ io.on("connection", (socket) => {
         user.online = true;
         await user.save();
 
+        const userId = user._id.toString();
+
         // Update onlineUsers and socketMap
-        if (!onlineUsers.has(user._id)) {
-          onlineUsers.set(user._id, username);
-          socketMap.set(user._id, socket.id);
+        if (!onlineUsers.has(userId) && !socketMap.has(userId)) {
+          onlineUsers.set(userId, username);
+          socketMap.set(userId, socket.id);
+
+          console.log("onlineUsers", onlineUsers);
+          console.log("socketMap", socketMap);
         }
         // socketMap.set(user._id, socket.id);
 
         // Broadcast only the username of the online user
-        io.emit("user-online", { username, userId: user._id, online: true });
+        io.emit("user-online", { username, userId: userId, online: true });
 
         // Emit the current online users
         socket.emit(
@@ -82,7 +91,10 @@ io.on("connection", (socket) => {
     }
   });
 
+  //!Redundant Function remove it safely
   socket.on("login", (userId) => {
+    userId = userId.toString(); //typecast for safety
+
     if (!userId) {
       console.error("Error: userId is required for login.");
       return;
@@ -97,6 +109,10 @@ io.on("connection", (socket) => {
   socket.on(
     "private_message",
     ({ senderId, receiverId, message }, callback) => {
+      // Typecast for safety
+      senderId = senderId.toString();
+      receiverId = receiverId.toString();
+
       if (!senderId || !receiverId) {
         console.error("Error: Missing senderId or receiverId.");
         callback?.({
@@ -157,3 +173,6 @@ io.on("connection", (socket) => {
 server.listen(3333, () => {
   console.log("Server running at http://localhost:3333");
 });
+
+//export
+export { io, socketMap };
