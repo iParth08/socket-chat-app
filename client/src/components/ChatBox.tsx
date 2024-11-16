@@ -19,7 +19,7 @@ const ChatBox: React.FC<ChatProps> = ({ userId, friendId }) => {
 
   useEffect(() => {
     // Login user to Socket.io
-    // socket.emit("login", userId);
+    socket.emit("login", userId);
 
     // Listen for incoming messages
     socket.on("new_message", (data: { senderId: string; message: string }) => {

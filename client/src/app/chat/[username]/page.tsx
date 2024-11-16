@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import UserProfile from "@/components/Profile";
 import ChatBox from "@/components/ChatBox";
@@ -20,7 +19,6 @@ type Friend = {
 };
 
 const Profile = ({ params }: { params: { username: string } }) => {
-  const router = useRouter();
   const { username } = params; // Access the username from the URL parameter
 
   const [showDashboard, setShowDashboard] = useState(true);
@@ -82,7 +80,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
       }
     };
 
-    onlineStatusFunc();
+    // onlineStatusFunc();
     fetchUserData();
   }, [username]);
 

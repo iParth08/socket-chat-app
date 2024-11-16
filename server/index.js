@@ -58,7 +58,7 @@ io.on("connection", (socket) => {
 
         // Update onlineUsers and socketMap
         onlineUsers.set(user._id, username);
-        socketMap.set(user._id, socket.id);
+        // socketMap.set(user._id, socket.id);
 
         // Broadcast only the username of the online user
         io.emit("user-online", { username, userId: user._id, online: true });
@@ -73,6 +73,15 @@ io.on("connection", (socket) => {
     } catch (err) {
       console.error("Error setting user online:", err);
     }
+  });
+
+  socket.on("login", (userId) => {
+    if (!userId) {
+      console.error("Error: userId is required for login.");
+      return;
+    }
+    socketMap.set(userId, socket.id);
+    console.log(`User ${userId} logged in with socket ID ${socket.id}`);
   });
 
   // Event to handle private messaging

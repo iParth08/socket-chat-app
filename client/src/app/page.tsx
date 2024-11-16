@@ -133,7 +133,10 @@ const Home = () => {
             <p className="mt-4">
               Don’t have an account?{" "}
               <a
-                onClick={() => setIsLogin(false)}
+                onClick={() => {
+                  setIsLogin(false);
+                  setError(null);
+                }}
                 className="text-blue-500 hover:underline cursor-pointer"
               >
                 Create a new profile
@@ -221,7 +224,10 @@ const Home = () => {
             <p className="mt-4">
               Already have an account?{" "}
               <a
-                onClick={() => setIsLogin(true)}
+                onClick={() => {
+                  setIsLogin(true);
+                  setError(null);
+                }}
                 className="text-blue-500 hover:underline cursor-pointer"
               >
                 Login

@@ -17,7 +17,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Assuming this is in your express route file
+// Checking for username
 router.post("/check", async (req, res) => {
   const { username } = req.body;
 
