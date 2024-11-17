@@ -19,6 +19,7 @@ type Friend = {
 };
 
 const Profile = ({ params }: { params: { username: string } }) => {
+  console.log("Present At:", `/chat/${params.username}`); //!route flag
   const { username } = params; // Access the username from the URL parameter
 
   const [showDashboard, setShowDashboard] = useState(true);

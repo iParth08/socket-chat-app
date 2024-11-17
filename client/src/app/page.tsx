@@ -20,6 +20,7 @@ type FormData = {
 };
 
 const Home = () => {
+  console.log("Present At:", `Home Page`); //!route flag
   const [isLogin, setIsLogin] = useState(true); // Toggle between login and registration form
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -48,7 +49,9 @@ const Home = () => {
           title: "Login successful",
           description: "Welcome back!",
         });
-        router.push(`/chat/${data.username}`);
+        console.log("After login:", `/chat/${data.username}`); //!route flag
+        router.replace(`/chat/${data.username}`);
+
         // Redirect to the chat room for the logged-in user
       } else {
         setError("User not found. Please create a new profile.");
@@ -85,6 +88,7 @@ const Home = () => {
         title: "Registration successful",
         description: "Welcome to the ChatterBox!",
       });
+      console.log("After Register:", `/chat/${data.username}`); //!route flag
       router.push(`/chat/${data.username}`); // Redirect to the chat room after successful registration
     } catch (error) {
       toast({
