@@ -54,12 +54,16 @@ const Sidebar = ({
                 <Image
                   src={friend.profile}
                   alt={friend.name}
+                  width={48}
+                  height={48}
                   className="w-12 h-12 rounded-full mr-3 object-cover object-center"
                 />
               ) : (
                 <Image
                   src={"https://via.placeholder.com/150"}
                   alt={friend.name}
+                  width={48}
+                  height={48}
                   className="w-12 h-12 rounded-full mr-2 object-cover object-center"
                 />
               )}

@@ -45,12 +45,16 @@ const Navbar = ({
           <Image
             src={"https://via.placeholder.com/150"}
             alt={currentUser?.username}
+            width={24}
+            height={24}
             className="w-10 h-10 rounded-full object-cover object-center"
           />
         ) : (
           <Image
             src={currentUser?.profile || "https://via.placeholder.com/150"}
             alt={currentUser?.username || "User"}
+            width={24}
+            height={24}
             className="w-10 h-10 rounded-full object-cover object-center"
           />
         )}
@@ -83,12 +87,16 @@ const Navbar = ({
                     <Image
                       src={"https://via.placeholder.com/150"}
                       alt={user.name}
+                      width={28}
+                      height={28}
                       className="w-8 h-8 rounded-full object-cover object-center"
                     />
                   ) : (
                     <Image
                       src={user.profile}
                       alt={user.name}
+                      width={28}
+                      height={28}
                       className="w-8 h-8 rounded-full object-cover object-center"
                     />
                   )}

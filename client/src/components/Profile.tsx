@@ -83,6 +83,8 @@ const UserProfile = ({ username }: { username: string }) => {
         <Image
           src={userProfile?.profile || "https://via.placeholder.com/150"}
           alt={userProfile?.name || "Profile Picture"}
+          width={150}
+          height={150}
           className="w-20 h-20 rounded-full object-cover object-center border-2 border-gray-300"
         />
 
