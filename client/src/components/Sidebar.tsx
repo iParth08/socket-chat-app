@@ -52,13 +52,13 @@ const Sidebar = ({
                 <img
                   src={friend.profile}
                   alt={friend.name}
-                  className="w-12 h-12 rounded-full mr-3"
+                  className="w-12 h-12 rounded-full mr-3 object-cover object-center"
                 />
               ) : (
                 <img
                   src={"https://via.placeholder.com/150"}
                   alt={friend.name}
-                  className="w-12 h-12 rounded-full mr-2"
+                  className="w-12 h-12 rounded-full mr-2 object-cover object-center"
                 />
               )}
               <section>

@@ -44,13 +44,13 @@ const Navbar = ({
           <img
             src={"https://via.placeholder.com/150"}
             alt={currentUser?.username}
-            className="w-10 h-10 rounded-full"
+            className="w-10 h-10 rounded-full object-cover object-center"
           />
         ) : (
           <img
             src={currentUser?.profile}
             alt={currentUser?.username}
-            className="w-10 h-10 rounded-full"
+            className="w-10 h-10 rounded-full object-cover object-center"
           />
         )}
         <Button onClick={() => setShowDashboard(true)}>
