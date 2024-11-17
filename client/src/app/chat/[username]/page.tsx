@@ -9,7 +9,6 @@ import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
 
 import socket from "@/utils/socket";
-import { on } from "events";
 
 // Type for a User
 type Friend = {

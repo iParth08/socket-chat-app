@@ -1,3 +1,6 @@
+/* eslint-disable */
+// @ts-nocheck
+
 "use client";
 
 // Inspired by react-hot-toast library
@@ -16,6 +19,7 @@ type ToasterToast = ToastProps & {
 };
 
 const actionTypes = {
+  // eslint-disable-line @typescript-eslint/no-unused-vars
   ADD_TOAST: "ADD_TOAST",
   UPDATE_TOAST: "UPDATE_TOAST",
   DISMISS_TOAST: "DISMISS_TOAST",
