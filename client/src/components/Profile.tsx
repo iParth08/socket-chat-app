@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 type User = {
   name: string;
@@ -79,7 +80,7 @@ const UserProfile = ({ username }: { username: string }) => {
     <div className="flex flex-col items-center p-8 border rounded-lg shadow-lg bg-white max-w-lg mx-auto">
       <div className="flex items-center space-x-4 mb-4">
         {/* Profile Picture */}
-        <img
+        <Image
           src={userProfile?.profile || "https://via.placeholder.com/150"}
           alt={userProfile?.name || "Profile Picture"}
           className="w-20 h-20 rounded-full object-cover object-center border-2 border-gray-300"

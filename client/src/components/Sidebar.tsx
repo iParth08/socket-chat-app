@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 
 // Type for a User
@@ -28,7 +29,9 @@ const Sidebar = ({
   return (
     <div className="w-1/4 bg-gray-100 p-4 border-r">
       <h2 className="text-xl font-bold border-b-4 mb-8 pb-4">
-        {username}'s Friends
+        {`${username.charAt(0).toUpperCase()}${username
+          .slice(1)
+          .toLowerCase()}\u0027s Friends`}
       </h2>
       {/* Placeholder for friends */}
       <ul className="mt-4">
@@ -48,13 +51,13 @@ const Sidebar = ({
               }}
             >
               {friend.profile !== "" ? (
-                <img
+                <Image
                   src={friend.profile}
                   alt={friend.name}
                   className="w-12 h-12 rounded-full mr-3 object-cover object-center"
                 />
               ) : (
-                <img
+                <Image
                   src={"https://via.placeholder.com/150"}
                   alt={friend.name}
                   className="w-12 h-12 rounded-full mr-2 object-cover object-center"

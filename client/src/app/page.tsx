@@ -65,6 +65,7 @@ const Home = () => {
         variant: "destructive",
       });
       setError("Error occurred while checking user.");
+      console.error(error);
     }
   };
 
@@ -73,16 +74,13 @@ const Home = () => {
     setError(null);
 
     try {
-      const response = await axios.post(
-        "http://localhost:3333/api/users/register",
-        {
-          name: data.name,
-          username: data.username,
-          gender: data.gender,
-          bio: data.bio,
-          profile: data.profile,
-        }
-      );
+      await axios.post("http://localhost:3333/api/users/register", {
+        name: data.name,
+        username: data.username,
+        gender: data.gender,
+        bio: data.bio,
+        profile: data.profile,
+      });
       toast({
         title: "Registration successful",
         description: "Welcome to the ChatterBox!",
@@ -95,6 +93,7 @@ const Home = () => {
         variant: "destructive",
       });
       setError("Error occurred while creating the profile.");
+      console.error(error);
     }
   };
 

@@ -22,8 +22,8 @@ const ChatBox: React.FC<ChatProps> = ({ userId, friendId }) => {
 
   //save message
   const saveMessage = async (
-    senderId: any,
-    receiverId: any,
+    senderId: string,
+    receiverId: string,
     content: string
   ) => {
     try {

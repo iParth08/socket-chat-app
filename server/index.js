@@ -96,20 +96,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  //!Redundant Function remove it safely
-  // socket.on("login", (userId) => {
-  //   userId = userId.toString(); //typecast for safety
-
-  //   if (!userId) {
-  //     console.error("Error: userId is required for login.");
-  //     return;
-  //   }
-  //   if (!socketMap.has(userId)) {
-  //     socketMap.set(userId, socket.id);
-  //   }
-  //   console.log(`User ${userId} logged in with socket ID ${socket.id}`);
-  // });
-
   // Event to handle private messaging
   socket.on(
     "private_message",
