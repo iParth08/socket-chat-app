@@ -30,7 +30,6 @@ const Home = () => {
     register,
     handleSubmit,
     formState: { errors },
-    control, // Add control for managing the Select field
   } = useForm<FormData>();
 
   // Function to handle form submission for login (check if user exists)

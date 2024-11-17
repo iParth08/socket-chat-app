@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import socket from "../utils/socket";
 import axios from "axios";
 
@@ -42,8 +42,6 @@ const ChatBox: React.FC<ChatProps> = ({ userId, friendId }) => {
   };
 
   useEffect(() => {
-    // socket.emit("login", userId);
-
     //Create a thread
     const createThreadAndFetchMessages = async () => {
       // establishing connection

@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import socket from "../utils/socket";
+import { useState } from "react";
 
 // Type for a User
 type Friend = {

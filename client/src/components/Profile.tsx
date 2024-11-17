@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 import {
   AlertDialog,
@@ -14,7 +14,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
 type User = {
@@ -30,7 +29,7 @@ const UserProfile = ({ username }: { username: string }) => {
   const [userProfile, setUserProfile] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  const { register, handleSubmit, control, reset } = useForm<User>();
+  const { register, handleSubmit, reset } = useForm<User>();
 
   // Fetch user details on mount
   useEffect(() => {
