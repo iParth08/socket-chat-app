@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  basePath: "https://socket-chat-app-pi.vercel.app/", // Ensure this matches the deployment
+  trailingSlash: false,
   images: {
     remotePatterns: [
       {
