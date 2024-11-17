@@ -1,8 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: false, // -Enforces best practices
-  trailingSlash: false, // Ensures URLs don't have a trailing slash unless necessary
-  output: "standalone",
+  reactStrictMode: true,
   images: {
     remotePatterns: [
       {
