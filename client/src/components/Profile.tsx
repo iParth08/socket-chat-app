@@ -16,6 +16,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { burl } from "@/utils/socket";
 
 type User = {
   name: string;
@@ -36,9 +37,7 @@ const UserProfile = ({ username }: { username: string }) => {
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:3333/api/users/${username}`
-        );
+        const response = await axios.get(`${burl}/api/users/${username}`);
         setUserProfile(response.data);
         reset(response.data); // Populate form fields with user data
       } catch (error) {
@@ -53,7 +52,7 @@ const UserProfile = ({ username }: { username: string }) => {
   //handle Delete Account
   const handleDeleteAccount = async () => {
     try {
-      await axios.delete(`http://localhost:3333/api/users/${username}`);
+      await axios.delete(`${burl}/api/users/${username}`);
       setUserProfile(null);
       //   alert("Account deleted successfully!");
       router.push("/");
@@ -66,7 +65,7 @@ const UserProfile = ({ username }: { username: string }) => {
   // Submit updated profile to the database
   const onSubmit = async (data: User) => {
     try {
-      await axios.put(`http://localhost:3333/api/users/${username}`, data);
+      await axios.put(`${burl}/api/users/${username}`, data);
       setUserProfile(data);
       setIsEditing(false);
       //   alert("Profile updated successfully!");

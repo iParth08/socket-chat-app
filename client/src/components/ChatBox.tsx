@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import socket from "../utils/socket";
+import socket, { burl } from "../utils/socket";
 import axios from "axios";
 
 // Define the types for messages
@@ -27,14 +27,11 @@ const ChatBox: React.FC<ChatProps> = ({ userId, friendId }) => {
     content: string
   ) => {
     try {
-      const response = await axios.post(
-        `http://localhost:3333/api/chats/send-message`,
-        {
-          senderId,
-          receiverId,
-          content,
-        }
-      );
+      const response = await axios.post(`${burl}/api/chats/send-message`, {
+        senderId,
+        receiverId,
+        content,
+      });
       console.log("Message saved:", response.data);
     } catch (error) {
       console.error("Error saving message:", error);
@@ -50,13 +47,10 @@ const ChatBox: React.FC<ChatProps> = ({ userId, friendId }) => {
       console.log("Creating thread between", userId, "and", friendId);
       try {
         // Create a thread or get an existing one
-        const newThread = await axios.post(
-          `http://localhost:3333/api/chats/create-thread`,
-          {
-            user1Id: userId,
-            user2Id: friendId,
-          }
-        );
+        const newThread = await axios.post(`${burl}/api/chats/create-thread`, {
+          user1Id: userId,
+          user2Id: friendId,
+        });
 
         if (newThread) {
           console.log("Thread created:", newThread.data);
@@ -65,15 +59,12 @@ const ChatBox: React.FC<ChatProps> = ({ userId, friendId }) => {
         }
 
         // fetch Messages for initial screen
-        const response = await axios.get(
-          `http://localhost:3333/api/chats/fetch-messages`,
-          {
-            params: {
-              user1Id: userId,
-              user2Id: friendId,
-            },
-          }
-        );
+        const response = await axios.get(`${burl}/api/chats/fetch-messages`, {
+          params: {
+            user1Id: userId,
+            user2Id: friendId,
+          },
+        });
 
         if (response.data) {
           console.log("Messages fetched:", response.data);
@@ -154,9 +145,10 @@ const ChatBox: React.FC<ChatProps> = ({ userId, friendId }) => {
               }`}
             >
               {msg.content} <br />
-              {/* <span className="ml-2 text-xs">
+              <span className="ml-2 text-xs">
                 {msg.receivedTime.toLocaleTimeString()}
-              </span> */}
+              </span>
+              {/* //!remove it */}
             </div>
           </div>
         ))}

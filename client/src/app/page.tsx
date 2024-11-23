@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
+import { burl } from "@/utils/socket";
 
 type FormData = {
   username: string;
@@ -38,12 +39,9 @@ const Home = () => {
     setError(null);
 
     try {
-      const response = await axios.post(
-        "http://localhost:3333/api/users/check",
-        {
-          username: data.username,
-        }
-      );
+      const response = await axios.post(`${burl}/api/users/check`, {
+        username: data.username,
+      });
       if (response.data.exists) {
         toast({
           title: "Login successful",
@@ -74,16 +72,13 @@ const Home = () => {
     setError(null);
 
     try {
-      const response = await axios.post(
-        "http://localhost:3333/api/users/register",
-        {
-          name: data.name,
-          username: data.username,
-          gender: data.gender,
-          bio: data.bio,
-          profile: data.profile,
-        }
-      );
+      const response = await axios.post(`${burl}/api/users/register`, {
+        name: data.name,
+        username: data.username,
+        gender: data.gender,
+        bio: data.bio,
+        profile: data.profile,
+      });
       toast({
         title: "Registration successful",
         description: "Welcome to the ChatterBox!",

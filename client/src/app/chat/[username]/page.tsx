@@ -8,7 +8,7 @@ import ChatBox from "@/components/ChatBox";
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
 
-import socket from "@/utils/socket";
+import socket, { burl } from "@/utils/socket";
 
 // Type for a User
 type Friend = {
@@ -64,11 +64,9 @@ const Profile = ({ params }: { params: { username: string } }) => {
     const fetchUserData = async () => {
       try {
         const currentUserResponse = await axios.get(
-          `http://localhost:3333/api/users/${username}`
+          `${burl}/api/users/${username}`
         );
-        const allUsersResponse = await axios.get(
-          "http://localhost:3333/api/users"
-        );
+        const allUsersResponse = await axios.get(`${burl}/api/users`);
 
         setCurrentUser(currentUserResponse.data);
         setAllUsers(allUsersResponse.data);
@@ -83,7 +81,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
     const fetchFriends = async () => {
       try {
         const friendsResponse = await axios.get(
-          `http://localhost:3333/api/users/${username}/friends`
+          `${burl}/api/users/${username}/friends`
         );
 
         console.log("Friends:", friendsResponse.data);
@@ -136,7 +134,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
   const handleAddFriend = async (friendUsername: string) => {
     console.log("Adding friend:", friendUsername, "username:", username);
     try {
-      await axios.post(`http://localhost:3333/api/users/add-friend`, {
+      await axios.post(`${burl}/api/users/add-friend`, {
         username,
         friendUsername,
       });
@@ -150,7 +148,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
   const handleRemoveFriend = async (friendUsername: string) => {
     console.log("Removing friend:", friendUsername, "username:", username);
     try {
-      await axios.post(`http://localhost:3333/api/users/remove-friend`, {
+      await axios.post(`${burl}/api/users/remove-friend`, {
         username,
         friendUsername,
       });
