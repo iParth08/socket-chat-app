@@ -75,7 +75,7 @@ const Sidebar = ({
               </section>
 
               <div
-                className={`ml-auto h-[10px] w-[10px] rounded-full ${
+                className={`ml-auto h-[10px] w-[10px] rounded-full flex-shrink-0 ${
                   onlineFriends.has(friend.username)
                     ? "bg-green-500"
                     : "bg-gray-500"
