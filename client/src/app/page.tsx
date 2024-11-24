@@ -75,7 +75,7 @@ const Home = () => {
     setError(null);
 
     try {
-      const response = await axios.post(`${burl}/api/users/register`, {
+      await axios.post(`${burl}/api/users/register`, {
         name: data.name,
         username: data.username,
         gender: data.gender,

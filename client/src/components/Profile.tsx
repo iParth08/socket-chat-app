@@ -16,6 +16,7 @@ import {
 
 import { useRouter } from "next/navigation";
 import { burl } from "@/utils/socket";
+import Image from "next/image";
 
 type User = {
   name: string;
