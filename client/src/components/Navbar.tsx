@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { UserPlus, UserRoundCheck } from "lucide-react";
 import { Button } from "./ui/button";
+import Image from "next/image";
 
 // type friend
 type Friend = {
@@ -32,7 +33,7 @@ const Navbar = ({
   handleAddFriend: (username: string) => void;
   handleRemoveFriend: (username: string) => void;
   setShowDashboard: React.Dispatch<React.SetStateAction<boolean>>;
-  filteredUsers: any[];
+  filteredUsers: Friend[];
   searchQuery: string;
   handleSearch: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
@@ -41,15 +42,19 @@ const Navbar = ({
       <h1 className="text-xl font-bold">ChatterBox</h1>
       <div className="flex items-center space-x-4">
         {currentUser?.profile === "" ? (
-          <img
+          <Image
             src={"https://via.placeholder.com/150"}
             alt={currentUser?.username}
+            width={24}
+            height={24}
             className="w-10 h-10 rounded-full object-cover object-center"
           />
         ) : (
-          <img
-            src={currentUser?.profile}
-            alt={currentUser?.username}
+          <Image
+            src={currentUser?.profile || "https://via.placeholder.com/150"}
+            alt={currentUser?.username || "User"}
+            width={24}
+            height={24}
             className="w-10 h-10 rounded-full object-cover object-center"
           />
         )}
@@ -79,15 +84,19 @@ const Navbar = ({
                   className="flex justify-between items-center p-4 border rounded-lg shadow-md"
                 >
                   {user.profile === "" ? (
-                    <img
+                    <Image
                       src={"https://via.placeholder.com/150"}
                       alt={user.name}
+                      width={28}
+                      height={28}
                       className="w-8 h-8 rounded-full object-cover object-center"
                     />
                   ) : (
-                    <img
+                    <Image
                       src={user.profile}
                       alt={user.name}
+                      width={28}
+                      height={28}
                       className="w-8 h-8 rounded-full object-cover object-center"
                     />
                   )}
@@ -103,14 +112,14 @@ const Navbar = ({
                   ) ? (
                     <Button
                       className="bg-green-600 hover:bg-red-500"
-                      onClick={(e) => handleRemoveFriend(user.username)}
+                      onClick={() => handleRemoveFriend(user.username)}
                     >
                       <UserRoundCheck />
                     </Button>
                   ) : (
                     <Button
                       className="hover:bg-green-500"
-                      onClick={(e) => handleAddFriend(user.username)}
+                      onClick={() => handleAddFriend(user.username)}
                     >
                       <UserPlus />
                     </Button>

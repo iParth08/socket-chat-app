@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 import {
   AlertDialog,
@@ -14,7 +14,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { burl } from "@/utils/socket";
 
@@ -31,7 +30,7 @@ const UserProfile = ({ username }: { username: string }) => {
   const [userProfile, setUserProfile] = useState<User | null>(null);
   const [isEditing, setIsEditing] = useState(false);
 
-  const { register, handleSubmit, control, reset } = useForm<User>();
+  const { register, handleSubmit, reset } = useForm<User>();
 
   // Fetch user details on mount
   useEffect(() => {
@@ -79,9 +78,11 @@ const UserProfile = ({ username }: { username: string }) => {
     <div className="flex flex-col items-center p-8 border rounded-lg shadow-lg bg-white max-w-lg mx-auto">
       <div className="flex items-center space-x-4 mb-4">
         {/* Profile Picture */}
-        <img
+        <Image
           src={userProfile?.profile || "https://via.placeholder.com/150"}
           alt={userProfile?.name || "Profile Picture"}
+          width={150}
+          height={150}
           className="w-20 h-20 rounded-full object-cover object-center border-2 border-gray-300"
         />
 

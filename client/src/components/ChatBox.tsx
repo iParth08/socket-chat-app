@@ -22,8 +22,8 @@ const ChatBox: React.FC<ChatProps> = ({ userId, friendId }) => {
 
   //save message
   const saveMessage = async (
-    senderId: any,
-    receiverId: any,
+    senderId: string,
+    receiverId: string,
     content: string
   ) => {
     try {
@@ -39,8 +39,6 @@ const ChatBox: React.FC<ChatProps> = ({ userId, friendId }) => {
   };
 
   useEffect(() => {
-    // socket.emit("login", userId);
-
     //Create a thread
     const createThreadAndFetchMessages = async () => {
       // establishing connection

@@ -19,6 +19,7 @@ type Friend = {
 };
 
 const Profile = ({ params }: { params: { username: string } }) => {
+  console.log("Present At:", `/chat/${params.username}`); //!route flag
   const { username } = params; // Access the username from the URL parameter
 
   const [showDashboard, setShowDashboard] = useState(true);
@@ -35,7 +36,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
 
   useEffect(() => {
     //handle online user
-    const handleUserOnline = (data: any) => {
+    const handleUserOnline = (data: { username: string }) => {
       console.log(`${data.username} is online`);
       setOnlineFriends((prevState) => {
         const newSet = new Set(prevState);
@@ -45,7 +46,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
     };
 
     //handle offline user
-    const handleUserOffline = (data: any) => {
+    const handleUserOffline = (data: { username: string }) => {
       console.log(`${data.username} is offline`);
       setOnlineFriends((prevState) => {
         const newSet = new Set(prevState);
@@ -55,7 +56,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
     };
 
     //set online friendslist
-    const handleOnlineFriends = (onlineUsers: any) => {
+    const handleOnlineFriends = (onlineUsers: string[]) => {
       console.log("Online users received:", onlineUsers);
       setOnlineFriends(new Set(onlineUsers));
     };
@@ -115,7 +116,7 @@ const Profile = ({ params }: { params: { username: string } }) => {
       socket.off("friend_list_updated");
       console.log("Set :", onlineFriends);
     };
-  }, [username]);
+  }, [username, setOnlineFriends]);
 
   // handle filter by name or username
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
